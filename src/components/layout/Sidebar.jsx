@@ -140,11 +140,12 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
     { to: '/dashboard/contributors', label: 'Contributors List', icon: 'contributorList' },
     { to: '/dashboard/citizens', label: 'Citizens List', icon: 'citizenList' },
     { to: '/dashboard/organizations', label: 'Organizations', icon: 'org' },
+    { to: '/dashboard/admins', label: 'Admins', icon: 'shield', adminOnly: true },
     { to: '/dashboard/map', label: 'Impact Map', icon: 'map' },
     { to: '/verifier/pending', label: 'Pending Activities', icon: 'dashboard' },
     { to: '/verifier/review', label: 'Approved Activities', icon: 'check' },
     { to: '/verifier/rejected', label: 'Rejected Activities', icon: 'x' },
-  ];
+  ].filter((link) => !link.adminOnly || user?.role === 'admin');
 
   if (!user) return null;
 

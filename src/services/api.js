@@ -74,6 +74,13 @@ export const orgApi = {
   setStatus: (id, isActive) => apiPatch(`/api/admin/organizations/${id}/status`, { isActive }),
 };
 
+// ─── Admin management API helpers (admin-only) ────────────────────────────────
+export const adminApi = {
+  list: () => apiGet(`/api/admin/admins`),
+  invite: (data) => apiPost(`/api/admin/admins`, data),
+  remove: (id) => apiDelete(`/api/admin/admins/${id}`),
+};
+
 // For binary downloads (e.g. generated PDFs) — reads the response as a blob
 // and triggers a browser save, using the server's Content-Disposition filename.
 export async function apiDownloadFile(path, fallbackFilename = 'download') {
@@ -159,4 +166,18 @@ export async function authVerify(token) {
 
 export async function authUpdateProfile(payload) {
   return apiPut('/api/auth/profile', payload);
+}
+
+export async function authValidateInvite(token) {
+  const res = await fetch(`${API_BASE_URL}/api/auth/validate-invite?token=${encodeURIComponent(token)}`);
+  return res.json();
+}
+
+export async function authSetPassword(token, password, confirmPassword) {
+  const res = await fetch(`${API_BASE_URL}/api/auth/set-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, password, confirmPassword })
+  });
+  return res.json();
 }

@@ -15,7 +15,9 @@ import ActivityReview from '../apps/verifier/pages/ActivityReview';
 import RejectedActivity from '../apps/verifier/pages/RejectedActivity';
 import Login from '../apps/auth/pages/Login';
 import ForgotPassword from '../apps/auth/pages/ForgotPassword';
+import SetPassword from '../apps/auth/pages/SetPassword';
 import ProfileSettings from '../apps/profile/pages/ProfileSettings';
+import AdminList from '../apps/admin/pages/AdminList';
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -119,6 +121,7 @@ export default function AppRouter() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/set-password" element={<SetPassword />} />
 
         <Route path="/" element={<Navigate to={user ? '/dashboard/overview' : '/login'} replace />} />
 
@@ -176,6 +179,13 @@ export default function AppRouter() {
           <ProtectedRoute>
             <MainLayout>
               <Organizations />
+            </MainLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/admins" element={
+          <ProtectedRoute>
+            <MainLayout>
+              <AdminList />
             </MainLayout>
           </ProtectedRoute>
         } />
