@@ -1,10 +1,11 @@
 import { useState, useRef } from 'react';
 import { useAuth } from '../../../context/AuthContext';
-import { authUpdateProfile } from '../../../services/api';
+import { authUpdateProfile, authUpdateAdminProfile } from '../../../services/api';
 import LoadingSpinner from '../../../components/common/LoadingSpinner';
 
 export default function ProfileSettings() {
   const { user, updateUser } = useAuth();
+  const isAdmin = user?.role === 'admin';
 
   const [formData, setFormData] = useState({
     firstName: user?.firstName || '',
@@ -46,7 +47,9 @@ export default function ProfileSettings() {
     setError('');
 
     try {
-      const res = await authUpdateProfile(formData);
+      // Admins live in a separate table from regular users, so they're
+      // updated through their own endpoint rather than /api/auth/profile.
+      const res = isAdmin ? await authUpdateAdminProfile(formData) : await authUpdateProfile(formData);
       if (res.ok) {
         setMessage('Profile updated successfully');
         updateUser(res.user);
@@ -165,32 +168,34 @@ export default function ProfileSettings() {
             </div>
           </div>
 
-          <div className="profile-form-grid">
-            <div className="form-group">
-              <label htmlFor="jobTitle">Job Title</label>
-              <input
-                id="jobTitle"
-                name="jobTitle"
-                type="text"
-                value={formData.jobTitle}
-                onChange={handleChange}
-                placeholder="e.g. Marine Biologist"
-                className="input-field"
-              />
+          {!isAdmin && (
+            <div className="profile-form-grid">
+              <div className="form-group">
+                <label htmlFor="jobTitle">Job Title</label>
+                <input
+                  id="jobTitle"
+                  name="jobTitle"
+                  type="text"
+                  value={formData.jobTitle}
+                  onChange={handleChange}
+                  placeholder="e.g. Marine Biologist"
+                  className="input-field"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="yearsExperience">Years of Experience</label>
+                <input
+                  id="yearsExperience"
+                  name="yearsExperience"
+                  type="text"
+                  value={formData.yearsExperience}
+                  onChange={handleChange}
+                  placeholder="e.g. 5"
+                  className="input-field"
+                />
+              </div>
             </div>
-            <div className="form-group">
-              <label htmlFor="yearsExperience">Years of Experience</label>
-              <input
-                id="yearsExperience"
-                name="yearsExperience"
-                type="text"
-                value={formData.yearsExperience}
-                onChange={handleChange}
-                placeholder="e.g. 5"
-                className="input-field"
-              />
-            </div>
-          </div>
+          )}
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '1rem', borderTop: '1px solid var(--border-light)' }}>
             <button

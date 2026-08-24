@@ -177,6 +177,10 @@ export async function authUpdateProfile(payload) {
   return apiPut('/api/auth/profile', payload);
 }
 
+export async function authUpdateAdminProfile(payload) {
+  return apiPut('/api/auth/admin/profile', payload);
+}
+
 export async function authValidateInvite(token) {
   const res = await fetch(`${API_BASE_URL}/api/auth/validate-invite?token=${encodeURIComponent(token)}`);
   return res.json();
