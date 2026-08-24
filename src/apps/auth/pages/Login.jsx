@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
-import { authLogin } from "../../../services/api";
+import { authLogin, authAdminLogin } from "../../../services/api";
 
 const TOKENS = `
   @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap');
@@ -192,7 +192,14 @@ export default function Login() {
     setError("");
     setLoading(true);
     try {
-      const data = await authLogin(email, password);
+      // Admins live in a separate table with their own login endpoint, so an
+      // email that's also a regular user (verifier/contributor/citizen) with
+      // a different password isn't blocked by the admin lookup. Try admin
+      // first (this panel is primarily an admin workspace), then fall back.
+      let data = await authAdminLogin(email, password);
+      if (!data.ok) {
+        data = await authLogin(email, password);
+      }
       if (data.ok) {
         login(data.user, data.token);
         navigate("/dashboard/overview", {

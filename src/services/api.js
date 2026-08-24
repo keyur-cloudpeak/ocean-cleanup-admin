@@ -137,6 +137,15 @@ export async function authLogin(username, password, socketId = null) {
   return res.json();
 }
 
+export async function authAdminLogin(username, password) {
+  const res = await fetch(`${API_BASE_URL}/api/auth/admin/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password })
+  });
+  return res.json();
+}
+
 export async function authLogout(token) {
   const res = await fetch(`${API_BASE_URL}/api/auth/logout`, {
     method: 'POST',
