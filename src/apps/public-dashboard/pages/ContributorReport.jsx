@@ -447,7 +447,7 @@ export default function ContributorOverview() {
     { label:'Activities Logged',    value:myActivities.length, sub:`${pendingCount} awaiting review`, icon:'📋' },
     { label:'Approval Rate',        value:`${approvalRate}%`,  sub:`${rejectedCount} rejected`,       icon:'✅', accent: approvalRate>=70?'#10b981':'#f59e0b' },
     { label:'OCEAN Tokens',         value:totalTokens,     sub:'From approved cleanups',              icon:'🪙', accent:'#f59e0b' },
-    rank ? { label:'Your Rank', value:`#${rank}`, sub: topPercent ? `Top ${topPercent}% of contributors` : `of ${stats.totalContributors} contributors`, icon:'🏆', accent:'#818cf8' } : null,
+    rank ? { label:'Rank', value:`${rank}`, sub: topPercent ? `Top ${topPercent}% of contributors` : `of ${stats.totalContributors} contributors`, icon:'🏆', accent:'#818cf8' } : null,
   ].filter(Boolean);
 
   return (
@@ -460,8 +460,6 @@ export default function ContributorOverview() {
         <OceanWaveStrip />
         <div className="contributor-hero__content">
           <div className="contributor-hero__kicker">
-            <span>Contributor Space</span>
-            {user?.jobTitle && <span className="contrib-job-badge">{user.jobTitle}</span>}
             <svg className="contributor-hero__mark" viewBox="0 0 136 38" aria-hidden="true">
               <path className="wave-1" d="M1 12c13-11 27-11 40 0s27 11 40 0 27-11 40 0" />
               <path className="wave-2" d="M12 20c13-11 27-11 40 0s27 11 40 0 27-11 40 0" />
@@ -469,18 +467,15 @@ export default function ContributorOverview() {
             </svg>
           </div>
           <h1 className="contributor-hero__title" style={{ fontSize: isMobile ? '1.65rem' : undefined }}>
-            Hi {firstName} — the coast is <em>a little cleaner</em><br />because you showed up.
+            {firstName} - <em>Report</em>
           </h1>
-          <p className="contributor-hero__sub">
-            Every cleanup you log is verified on-chain and helps BlueMind track where pollution is concentrating.
-          </p>
           {!isNewUser && <button
             id="export-report-btn"
             type="button"
             onClick={() => setExportOpen((open) => !open)}
             style={{ background:'transparent', border:'1px solid var(--border-light)', borderRadius:'999px', color:'var(--primary)', fontSize:'0.72rem', fontWeight:700, letterSpacing:'.08em', textTransform:'uppercase', padding:'0.5rem 1rem', cursor:'pointer', boxShadow:'none', fontFamily:'var(--font-sans)', marginTop: isMobile ? '0.75rem' : '0.5rem' }}
           >
-            Export field report
+            Export report
           </button>}
         </div>
         <div className="contrib-hero-actions">

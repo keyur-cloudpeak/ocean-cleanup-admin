@@ -426,17 +426,13 @@ export default function CitizenOverview() {
         </svg>
         <div>
           <div className="co-hero-kicker">
-            <div className="co-eyebrow">Citizen Space</div>
             <svg className="co-heading-wave" viewBox="0 0 136 38" aria-hidden="true">
               <path className="wave-1" d="M1 12c13-11 27-11 40 0s27 11 40 0 27-11 40 0" />
               <path className="wave-2" d="M12 20c13-11 27-11 40 0s27 11 40 0 27-11 40 0" />
               <path className="wave-3" d="M1 28c13-11 27-11 40 0s27 11 40 0 27-11 40 0" />
             </svg>
           </div>
-          <h1 className="co-h1">
-            Hi {firstName} — the coast is{' '}
-            <em>a little cleaner</em> because you showed up.
-          </h1>
+          <h1 className="co-h1">{firstName} - <em>Report</em></h1>
           <p className="co-hero-sub">
             {s.totalReports || 0} report{s.totalReports !== 1 ? 's' : ''} logged since {sinceLabel}.
             Every entry feeds the community map BlueMind uses to track where pollution is concentrating.
@@ -458,7 +454,7 @@ export default function CitizenOverview() {
           { label: 'Reports', value: s.totalReports || 0, sub: `since ${sinceLabel}`, cls: '' },
           { label: 'Waste logged', value: `${Number(s.totalKg || 0).toFixed(1)} kg`, sub: 'verified + pending', cls: '' },
           { label: 'Badges earned', value: `${earned.length} / ${badges.length || 8}`, sub: badges.find(b => !b.earned)?.title || 'All earned!', cls: 'amber' },
-          { label: 'City rank', value: s.cityRank ? `#${s.cityRank}` : '—', sub: lbRows.length ? `of ${lbRows.length} citizens` : 'not ranked yet', cls: '' },
+          { label: 'Rank', value: s.cityRank ? `${s.cityRank}` : '—', sub: lbRows.length ? `of ${lbRows.length} citizens` : 'not ranked yet', cls: '' },
         ].map(({ label, value, sub, cls }) => (
           <div key={label} className="co-stat">
             <div className="co-stat-label">{label}</div>
