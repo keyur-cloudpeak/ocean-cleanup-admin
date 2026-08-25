@@ -397,6 +397,7 @@ export default function CitizenOverview() {
   const allRows = lbRows;
 
   const firstName = user?.firstName || user?.displayName?.split(' ')[0] || 'there';
+  const lastName = user?.lastName || user?.displayName?.split(' ').slice(-1)[0] || 'there';
   const sinceLabel = memberSince(s.memberSince);
   const isNewUser = (s.totalReports || 0) === 0;
 
@@ -432,7 +433,7 @@ export default function CitizenOverview() {
               <path className="wave-3" d="M1 28c13-11 27-11 40 0s27 11 40 0 27-11 40 0" />
             </svg>
           </div>
-          <h1 className="co-h1">{firstName} - <em>Report</em></h1>
+          <h1 className="co-h1">{firstName} {lastName} - <em>Report</em></h1>
           <p className="co-hero-sub">
             {s.totalReports || 0} report{s.totalReports !== 1 ? 's' : ''} logged since {sinceLabel}.
             Every entry feeds the community map BlueMind uses to track where pollution is concentrating.

@@ -417,6 +417,7 @@ export default function ContributorOverview() {
   const topBrandsMax = topBrands[0]?.count || 1;
 
   const firstName = user?.firstName || user?.displayName?.split(' ')[0] || 'there';
+  const lastName = user?.lastName || user?.displayName?.split(' ').slice(-1)[0] || 'there';
 
   // New user = hasn't logged any activity at all yet. Show a single "get started"
   // card instead of a dashboard full of zero-value KPIs.
@@ -467,7 +468,7 @@ export default function ContributorOverview() {
             </svg>
           </div>
           <h1 className="contributor-hero__title" style={{ fontSize: isMobile ? '1.65rem' : undefined }}>
-            {firstName} - <em>Report</em>
+            {firstName} {lastName} - <em>Report</em>
           </h1>
           {!isNewUser && <button
             id="export-report-btn"
