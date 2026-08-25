@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserLists, toggleUserActiveStatus } from '../../../store/usersSlice';
 
@@ -89,9 +90,13 @@ function UserTable({ users, loading, emptyLabel, onToggleActive, actionState, or
                   }}>
                     {(u.firstName?.[0] || '?').toUpperCase()}
                   </div>
-                  <span style={{ fontWeight: 500 }}>
+                  <Link
+                    to={`/dashboard/contributors/${u.id}`}
+                    style={{ fontWeight: 500, color: 'var(--text-main)', textDecoration: 'none' }}
+                    title="Open contributor report"
+                  >
                     {u.firstName} {u.lastName}
-                  </span>
+                  </Link>
                 </div>
               </td>
               <td style={{ padding: '0.875rem 1rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>

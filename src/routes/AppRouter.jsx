@@ -8,7 +8,9 @@ import ImpactMap from '../apps/public-dashboard/pages/ImpactMap';
 import AllActivities from '../apps/public-dashboard/pages/AllActivities';
 import VerifierList from '../apps/public-dashboard/pages/VerifierList';
 import ContributorsList from '../apps/public-dashboard/pages/ContributorsList';
+import ContributorReport from '../apps/public-dashboard/pages/ContributorReport';
 import CitizensList from '../apps/public-dashboard/pages/CitizensList';
+import CitizenReport from '../apps/public-dashboard/pages/CitizenReport';
 import Organizations from '../apps/public-dashboard/pages/Organizations';
 import PendingQueue from '../apps/verifier/pages/PendingQueue';
 import ActivityReview from '../apps/verifier/pages/ActivityReview';
@@ -168,10 +170,24 @@ export default function AppRouter() {
             </MainLayout>
           </ProtectedRoute>
         } />
+        <Route path="/dashboard/contributors/:userId" element={
+          <ProtectedRoute>
+            <MainLayout>
+              <ContributorReport />
+            </MainLayout>
+          </ProtectedRoute>
+        } />
         <Route path="/dashboard/citizens" element={
           <ProtectedRoute>
             <MainLayout>
               <CitizensList />
+            </MainLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/citizens/:userId" element={
+          <ProtectedRoute>
+            <MainLayout>
+              <CitizenReport />
             </MainLayout>
           </ProtectedRoute>
         } />
