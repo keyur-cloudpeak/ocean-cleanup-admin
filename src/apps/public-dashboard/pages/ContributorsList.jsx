@@ -16,7 +16,7 @@ function formatJoiningDate(timestamp) {
   return `${day}-${month}-${year}`;
 }
 
-function UserTable({ users, loading, emptyLabel, onToggleActive, actionState, orgMap }) {
+function UserTable({ users, loading, emptyLabel, onToggleActive, onResendInvite, onCancelInvite, actionState, orgMap }) {
   if (loading) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem', padding: '1rem' }}>
@@ -133,13 +133,27 @@ function UserTable({ users, loading, emptyLabel, onToggleActive, actionState, or
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   minWidth: '4.5rem', borderRadius: '999px', padding: '0.35rem 0.75rem',
                   fontSize: '0.75rem', fontWeight: 600,
-                  background: u.active ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)',
-                  color: u.active ? '#166534' : '#991b1b'
+                  background: u.invitePending ? 'rgba(245,158,11,0.12)' : u.active ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)',
+                  color: u.invitePending ? '#b45309' : u.active ? '#166534' : '#991b1b'
                 }}>
-                  {u.active ? 'Active' : 'Inactive'}
+                  {u.invitePending ? 'Invite Pending' : u.active ? 'Active' : 'Inactive'}
                 </span>
               </td>
               <td style={{ padding: '0.875rem 1rem', whiteSpace: 'nowrap' }}>
+                {u.invitePending ? (
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button type="button" disabled={actionState[u.id]} onClick={() => onResendInvite?.(u)} style={{
+                      padding: '0.4rem 0.9rem', borderRadius: '999px', fontSize: '0.78rem', fontWeight: 600,
+                      border: '1px solid rgba(14,165,233,0.4)', background: 'rgba(14,165,233,0.1)',
+                      color: '#0ea5e9', cursor: actionState[u.id] ? 'not-allowed' : 'pointer'
+                    }}>{actionState[u.id] ? 'Working…' : 'Resend'}</button>
+                    <button type="button" disabled={actionState[u.id]} onClick={() => onCancelInvite?.(u)} style={{
+                      padding: '0.4rem 0.9rem', borderRadius: '999px', fontSize: '0.78rem', fontWeight: 600,
+                      border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.08)',
+                      color: '#ef4444', cursor: actionState[u.id] ? 'not-allowed' : 'pointer'
+                    }}>Cancel</button>
+                  </div>
+                ) : (
                 <label
                   style={{
                     display: 'inline-flex',
@@ -184,6 +198,7 @@ function UserTable({ users, loading, emptyLabel, onToggleActive, actionState, or
                     {actionState[u.id] ? 'Saving…' : u.active}
                   </span>
                 </label>
+                )}
               </td>
             </tr>
           ))}
@@ -200,7 +215,7 @@ export default function ContributorsList() {
   const [page, setPage] = useState(1);
   const [actionState, setActionState] = useState({});
   const [showInvite, setShowInvite] = useState(false);
-  const [notice, setNotice] = useState('');
+  const [notice, setNotice] = useState(null);
   const loading = status === 'idle' || status === 'loading';
   const pageSize = 10;
 
@@ -233,11 +248,40 @@ export default function ContributorsList() {
     }
   };
 
+  const showNotice = (text, isError = false) => {
+    setNotice({ text, isError });
+    window.setTimeout(() => setNotice(null), 6000);
+  };
+
   const handleInvited = (res) => {
     setShowInvite(false);
-    setNotice(res?.message || 'Invite sent');
-    window.setTimeout(() => setNotice(''), 6000);
-    dispatch(fetchUserLists());
+    showNotice(res?.message || 'Invite sent');
+    dispatch(fetchUserLists({ force: true }));
+  };
+
+  const runInviteAction = async (user, action, onDone) => {
+    setActionState((prev) => ({ ...prev, [user.id]: true }));
+    try {
+      const res = await action();
+      if (!res.ok) throw new Error(res.error || 'Request failed');
+      showNotice(onDone(res));
+      dispatch(fetchUserLists({ force: true }));
+    } catch (err) {
+      showNotice(err.message, true);
+    } finally {
+      setActionState((prev) => ({ ...prev, [user.id]: false }));
+    }
+  };
+
+  const handleResendInvite = (user) => runInviteAction(
+    user,
+    () => contributorInviteApi.invite({ email: user.email, firstName: user.firstName, lastName: user.lastName }),
+    (res) => res.message || 'Invite resent'
+  );
+
+  const handleCancelInvite = (user) => {
+    if (!window.confirm(`Cancel the pending invite for ${user.email}?`)) return;
+    runInviteAction(user, () => contributorInviteApi.cancel(user.id), (res) => res.message || 'Invite cancelled');
   };
 
   return (
@@ -285,10 +329,10 @@ export default function ContributorsList() {
           </button>
           {notice && (
             <span role="status" style={{
-              fontSize: '0.8rem', color: '#10b981',
-              background: 'rgba(16,185,129,0.12)',
+              fontSize: '0.8rem', color: notice.isError ? '#ef4444' : '#10b981',
+              background: notice.isError ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.12)',
               padding: '0.25rem 0.75rem', borderRadius: '0.5rem'
-            }}>{notice}</span>
+            }}>{notice.text}</span>
           )}
           {error && (
             <span style={{
@@ -307,6 +351,8 @@ export default function ContributorsList() {
           loading={loading}
           emptyLabel="No contributors registered yet."
           onToggleActive={handleToggleActive}
+          onResendInvite={handleResendInvite}
+          onCancelInvite={handleCancelInvite}
           actionState={actionState}
           orgMap={orgMap}
         />

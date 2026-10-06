@@ -5,7 +5,7 @@ import { apiGet, apiPatch } from '../services/api';
 
 export const fetchUserLists = createAsyncThunk(
   'users/fetchLists',
-  async (_, { rejectWithValue }) => {
+  async (_arg, { rejectWithValue }) => {
     try {
       const [usersData, orgsData] = await Promise.all([
         apiGet('/api/dashboard/users'),
@@ -22,9 +22,11 @@ export const fetchUserLists = createAsyncThunk(
     }
   },
   {
-    condition: (_, { getState }) => {
+    // `{ force: true }` re-fetches after something changed (e.g. an invite).
+    condition: (arg, { getState }) => {
       const { users } = getState();
-      return users.status !== 'succeeded' && users.status !== 'loading';
+      if (users.status === 'loading') return false;
+      return arg?.force === true || users.status !== 'succeeded';
     }
   }
 );

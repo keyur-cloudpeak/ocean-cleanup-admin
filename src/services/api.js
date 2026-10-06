@@ -84,6 +84,7 @@ export const adminApi = {
 // ─── Contributor invites (admin-only) ─────────────────────────────────────────
 export const contributorInviteApi = {
   invite: (data) => apiPost(`/api/admin/contributors`, data),
+  cancel: (id) => apiDelete(`/api/admin/contributors/${id}`),
 };
 
 // For binary downloads (e.g. generated PDFs) — reads the response as a blob
