@@ -81,6 +81,11 @@ export const adminApi = {
   remove: (id) => apiDelete(`/api/admin/admins/${id}`),
 };
 
+// ─── Contributor invites (admin-only) ─────────────────────────────────────────
+export const contributorInviteApi = {
+  invite: (data) => apiPost(`/api/admin/contributors`, data),
+};
+
 // For binary downloads (e.g. generated PDFs) — reads the response as a blob
 // and triggers a browser save, using the server's Content-Disposition filename.
 export async function apiDownloadFile(path, fallbackFilename = 'download') {

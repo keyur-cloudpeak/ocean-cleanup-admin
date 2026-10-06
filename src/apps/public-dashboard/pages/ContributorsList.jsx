@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserLists, toggleUserActiveStatus } from '../../../store/usersSlice';
+import { contributorInviteApi } from '../../../services/api';
+import InviteModal from '../../../components/common/InviteModal';
 
 function formatJoiningDate(timestamp) {
   const date = new Date(timestamp);
@@ -197,6 +199,8 @@ export default function ContributorsList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
   const [actionState, setActionState] = useState({});
+  const [showInvite, setShowInvite] = useState(false);
+  const [notice, setNotice] = useState('');
   const loading = status === 'idle' || status === 'loading';
   const pageSize = 10;
 
@@ -227,6 +231,13 @@ export default function ContributorsList() {
     } finally {
       setActionState((prev) => ({ ...prev, [user.id]: false }));
     }
+  };
+
+  const handleInvited = (res) => {
+    setShowInvite(false);
+    setNotice(res?.message || 'Invite sent');
+    window.setTimeout(() => setNotice(''), 6000);
+    dispatch(fetchUserLists());
   };
 
   return (
@@ -262,6 +273,22 @@ export default function ContributorsList() {
             }}>
               Total: {filteredContributors.length}
             </span>
+          )}
+          <button type="button" onClick={() => setShowInvite(true)} style={{
+            padding: '0.65rem 1.25rem', borderRadius: '999px', border: 'none',
+            background: 'linear-gradient(135deg, #0ea5e9, #6366f1)',
+            color: '#fff', fontWeight: 600, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: '0.4rem'
+          }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Contributor
+          </button>
+          {notice && (
+            <span role="status" style={{
+              fontSize: '0.8rem', color: '#10b981',
+              background: 'rgba(16,185,129,0.12)',
+              padding: '0.25rem 0.75rem', borderRadius: '0.5rem'
+            }}>{notice}</span>
           )}
           {error && (
             <span style={{
@@ -317,6 +344,16 @@ export default function ContributorsList() {
           </button>
         </div>
       </div>
+
+      {showInvite && (
+        <InviteModal
+          title="Add Contributor"
+          placeholder="contributor@example.com"
+          onInvite={contributorInviteApi.invite}
+          onClose={() => setShowInvite(false)}
+          onInvited={handleInvited}
+        />
+      )}
 
       <style>{`
         @keyframes pulse {
